@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.realworld.show)",
+      "WebFetch(domain:main--realworld-docs.netlify.app)",
+      "WebFetch(domain:realworld-docs.netlify.app)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:lucumr.pocoo.org)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(gh issue:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
