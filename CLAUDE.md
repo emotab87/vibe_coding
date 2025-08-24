@@ -52,6 +52,11 @@ cd backend && go mod tidy && go run cmd/main.go
 # Frontend  
 cd frontend && npm install && npm run dev
 npm run build  # Production build
+
+# Testing (TDD Workflow)
+cd backend && go test ./...        # Run all tests
+cd backend && go test -v ./...     # Run tests with verbose output
+cd backend && go test -cover ./... # Run tests with coverage report
 ```
 
 ## Tech Stack
@@ -123,8 +128,23 @@ npm run build  # Production build
 - **Explicit naming**: Long, descriptive function names
 - **Generate over import**: Prefer code generation to new dependencies
 
+### Backend Development Standards
+- **Test-Driven Development (TDD)**: Write tests before implementation for all core business logic
+- **SOLID Principles**: Follow Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
+- **Clean Architecture**: Separate concerns with clear boundaries between layers (handlers, use cases, repositories, entities)
+
+### Architecture Layers (Backend)
+```
+internal/
+├── entities/         # Business entities (domain models)
+├── usecases/        # Business logic and use cases
+├── repositories/    # Data access interfaces and implementations
+├── handlers/        # HTTP handlers (infrastructure layer)
+└── middleware/      # Cross-cutting concerns
+```
+
 ### Error Handling
-- Go: Explicit error returns
+- Go: Explicit error returns with proper error wrapping
 - React: Error boundaries for component errors
 - API: Standard HTTP status codes (400, 401, 403, 404, 500)
 
@@ -132,6 +152,15 @@ npm run build  # Production build
 - **Global state**: Auth state via Context API only
 - **Local state**: useState/useReducer for component state
 - **Server state**: Consider React Query for future
+
+### Issue Management & Progress Tracking
+- **Commit-based Progress**: Each commit should represent a complete, working increment
+- **Acceptance Criteria Verification**: Comment on issues with:
+  - What was implemented in each commit
+  - Which acceptance criteria were fulfilled
+  - Evidence of working functionality (test results, screenshots, etc.)
+  - Any blockers or dependencies discovered
+- **TDD Evidence**: Include test results in issue comments to demonstrate TDD approach
 
 ## Documentation
 
