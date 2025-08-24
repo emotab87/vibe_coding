@@ -59,6 +59,16 @@ cd backend && go test -v ./...     # Run tests with verbose output
 cd backend && go test -cover ./... # Run tests with coverage report
 ```
 
+### GitHub Operations
+```bash
+# Use GitHub CLI for all GitHub-related operations
+gh issue list                     # List issues
+gh issue create --title "Title"   # Create new issue
+gh issue edit 123                 # Edit issue #123
+gh pr create --title "Title"      # Create pull request
+gh pr merge 456                   # Merge pull request #456
+```
+
 ## Tech Stack
 
 ### Backend
