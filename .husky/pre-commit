@@ -1,0 +1,54 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Frontend checks (if frontend directory exists and has package.json)
+if [ -f "frontend/package.json" ]; then
+  echo "📦 Checking frontend..."
+  cd frontend
+  
+  # Install dependencies if node_modules doesn't exist
+  if [ ! -d "node_modules" ]; then
+    echo "📥 Installing frontend dependencies..."
+    npm install
+  fi
+  
+  # Run lint-staged for frontend
+  npm run pre-commit
+  
+  # Type checking
+  echo "🔍 Type checking..."
+  npm run type-check
+  
+  cd ..
+fi
+
+# Backend checks (if backend directory exists and has go.mod)
+if [ -f "backend/go.mod" ]; then
+  echo "🐹 Checking backend..."
+  cd backend
+  
+  # Format Go code
+  echo "🎨 Formatting Go code..."
+  go fmt ./...
+  
+  # Vet Go code
+  echo "🔍 Vetting Go code..."
+  go vet ./...
+  
+  # Run tests if any exist
+  if ls *_test.go >/dev/null 2>&1; then
+    echo "🧪 Running Go tests..."
+    go test ./...
+  fi
+  
+  # Try to build
+  echo "🔨 Building Go code..."
+  go build -o /tmp/conduit-build ./cmd/...
+  rm -f /tmp/conduit-build
+  
+  cd ..
+fi
+
+echo "✅ Pre-commit checks completed successfully!"
