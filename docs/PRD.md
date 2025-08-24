@@ -301,44 +301,56 @@ Authorization: Token jwt.token.here
 ## 10. 기술 스택
 
 ### 10.1 백엔드 기술
-- **언어**: Go
+- **언어**: Go 1.22.x (LTS)
   - 명시적 컨텍스트 시스템
   - 단순성과 가독성
   - AI 에이전트 친화적 구조
   - 낮은 생태계 변동성
   - 구조적 인터페이스 지원
+  - **공식 문서**: https://go.dev/doc/install
 
 ### 10.2 프론트엔드 기술
-- **프레임워크**: React 18+
-- **빌드 도구**: Vite
-- **라우팅**: TanStack Router
-- **상태 관리**: TanStack Query (서버 상태) + React useState/useReducer (로컬 상태)
-- **스타일링**: Tailwind CSS + shadcn/ui
+- **런타임**: Node.js v22.x (LTS) - **공식 문서**: https://nodejs.org/en/docs/guides/getting-started-guide
+- **타입 시스템**: TypeScript 5.5.x - **공식 문서**: https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
+- **프레임워크**: React 18.x - **공식 문서**: https://react.dev/learn/start-a-new-react-project
+- **빌드 도구**: Vite 5.x - **공식 문서**: https://vitejs.dev/guide/
+- **라우팅**: TanStack Router 1.x - **공식 문서**: https://tanstack.com/router/v1/docs/guide/quick-start
+- **상태 관리**: TanStack Query 5.x (서버 상태) + React useState/useReducer (로컬 상태)
+  - **공식 문서**: https://tanstack.com/query/latest/docs/framework/react/quick-start
+- **스타일링**: Tailwind CSS 3.4.x + shadcn/ui
   - 유틸리티 우선 CSS 프레임워크
   - 재사용 가능한 컴포넌트 라이브러리
   - 타입스크립트 지원
   - 접근성 기본 제공
+  - **Tailwind CSS 공식 문서**: https://tailwindcss.com/docs/installation
+  - **shadcn/ui 공식 문서**: https://ui.shadcn.com/docs/installation
 
 ### 10.3 데이터베이스
-- **데이터베이스**: SQLite
+- **데이터베이스**: SQLite 3.45.x
   - 개발 환경 단순성
   - 파일 기반 데이터베이스
   - 배포 용이성
   - 트랜잭션 지원
+  - **공식 문서**: https://www.sqlite.org/quickstart.html
 - **쿼리 방식**: 직접 SQL 사용 (ORM 최소화)
 
 ### 10.4 실행 환경
-- **컨테이너화**: Docker
+- **컨테이너화**: Docker 24.x (LTS)
   - 일관된 개발/배포 환경
   - 의존성 격리
   - 크로스 플랫폼 지원
   - docker-compose를 통한 개발 환경 구성
+  - **공식 문서**: https://docs.docker.com/get-started/
 
 ### 10.5 개발 도구
-- **패키지 매니저**: npm/yarn
-- **타입 시스템**: TypeScript (프론트엔드)
-- **코드 포맷팅**: Prettier + ESLint
-- **테스트**: Go 표준 테스트 (백엔드), Vitest (프론트엔드)
+- **패키지 매니저**: npm (Node.js 포함)
+- **코드 포맷팅 및 린팅**:
+  - ESLint 9.x - **공식 문서**: https://eslint.org/docs/latest/use/getting-started
+  - Prettier 3.x - **공식 문서**: https://prettier.io/docs/en/install.html
+- **테스트 프레임워크**:
+  - Go 표준 테스트 (백엔드) - **공식 문서**: https://go.dev/doc/tutorial/add-a-test
+  - Vitest 1.x (프론트엔드 단위 테스트) - **공식 문서**: https://vitest.dev/guide/
+  - Playwright 1.44.x (E2E 테스트) - **공식 문서**: https://playwright.dev/docs/intro
 
 ## 11. 개발 철학 및 원칙
 
