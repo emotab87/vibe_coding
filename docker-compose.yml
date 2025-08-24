@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # Frontend Service (React + Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8080/api
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
+
+  # Backend Service (Go)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+    environment:
+      - ENV=development
+      - PORT=8080
+      - DB_PATH=/app/data/conduit.db
+      - JWT_SECRET=your-jwt-secret-key-here
+      - CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - db-setup
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Database Setup (SQLite)
+  # SQLite is file-based, so we just ensure the data directory exists
+  db-setup:
+    image: alpine:latest
+    volumes:
+      - ./data:/data
+    command: >
+      sh -c "
+        mkdir -p /data &&
+        touch /data/conduit.db &&
+        chmod 666 /data/conduit.db &&
+        echo 'Database file prepared'
+      "
+    networks:
+      - app-network
+
+  # Development Tools (Optional)
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=sqlite
+    volumes:
+      - ./data:/var/lib/sqlite
+    networks:
+      - app-network
+    profiles:
+      - tools
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+  go_cache:

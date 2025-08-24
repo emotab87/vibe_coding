@@ -1,0 +1,124 @@
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+*.temp
+bash.exe.stackdump
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Node.js (Frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+.yarn-integrity
+
+# Frontend Build Output
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/out/
+frontend/.vite/
+frontend/.nuxt/
+
+# Go (Backend)
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+backend/main
+backend/cmd/main
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Go workspace file
+go.work
+
+# Dependency directories
+backend/vendor/
+
+# Go module download cache
+go/pkg/mod/
+
+# Go build cache
+go-build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+database.sql
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Local development
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output/
+
+# Dependency lock files (optional - you might want to commit these)
+# package-lock.json
+# yarn.lock
+
+# Temporary folders
+tmp/
+temp/
+
+# OS generated files
+Icon
+*.swp
+*.swo
+
+# Application specific
+uploads/
+storage/
+public/uploads/
+
+# Claude AI artifacts (optional)
+.claude/artifacts/
