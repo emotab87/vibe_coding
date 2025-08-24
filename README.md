@@ -64,12 +64,15 @@ For more information on how to this works with other frontends/backends, head ov
 git clone https://github.com/emotab87/vibe_coding.git
 cd vibe_coding
 
+# 환경 변수 설정
+cp .env.example .env
+
 # Docker로 전체 환경 실행
 docker-compose up
 
 # 또는 개별 실행
 # 백엔드
-cd backend && go run cmd/main.go
+cd backend && make run
 
 # 프론트엔드 (새 터미널)
 cd frontend && npm install && npm run dev
@@ -79,8 +82,43 @@ cd frontend && npm install && npm run dev
 - **프론트엔드**: http://localhost:3000
 - **백엔드 API**: http://localhost:8080/api
 
-### API 문서
-백엔드 서버 실행 후 http://localhost:8080/api-docs 에서 API 문서를 확인할 수 있습니다.
+### 개발 환경 설정
+
+```bash
+# 백엔드 개발 도구 설치
+cd backend && make install-tools
+
+# 프론트엔드 의존성 설치
+cd frontend && npm install
+
+# 개발 서버 시작 (Hot reload)
+# 백엔드
+cd backend && make dev
+
+# 프론트엔드
+cd frontend && npm run dev
+```
+
+### 코드 품질 관리
+
+이 프로젝트는 Husky를 사용한 자동 코드 품질 검사가 설정되어 있습니다:
+
+```bash
+# 코드 포맷팅
+cd backend && make fmt
+cd frontend && npm run format
+
+# 린팅
+cd backend && make lint
+cd frontend && npm run lint
+
+# 테스트
+cd backend && make test
+cd frontend && npm test
+
+# 전체 검사 (커밋 시 자동 실행)
+cd backend && make check
+```
 
 ## 📁 프로젝트 구조
 
@@ -89,22 +127,36 @@ cd frontend && npm install && npm run dev
 ├── backend/                 # Go 백엔드
 │   ├── cmd/                # 애플리케이션 진입점
 │   ├── internal/           # 내부 패키지
-│   │   ├── handlers/       # HTTP 핸들러
+│   │   ├── handlers/       # HTTP 핸들러 (Infrastructure Layer)
 │   │   ├── models/         # 데이터 모델
-│   │   ├── middleware/     # 미들웨어
-│   │   └── database/       # 데이터베이스 로직
-│   └── migrations/         # DB 마이그레이션
+│   │   ├── middleware/     # Cross-cutting concerns
+│   │   ├── database/       # 데이터베이스 로직 (직접 SQL)
+│   │   ├── entities/       # Business entities (Domain Layer)
+│   │   ├── usecases/       # Business logic (Application Layer)
+│   │   └── repositories/   # Data access interfaces
+│   ├── migrations/         # DB 마이그레이션
+│   ├── Makefile            # 빌드 및 개발 명령어
+│   ├── Dockerfile.dev      # 개발용 Docker 설정
+│   └── .air.toml           # Hot reload 설정
 ├── frontend/               # React 프론트엔드
 │   ├── src/
 │   │   ├── components/     # 재사용 컴포넌트
 │   │   ├── pages/          # 페이지 컴포넌트
 │   │   ├── hooks/          # 커스텀 훅
-│   │   ├── services/       # API 서비스
-│   │   └── types/          # TypeScript 타입
-│   └── public/
-├── docs/                   # 문서
-├── docker-compose.yml      # Docker 설정
-└── README.md
+│   │   ├── services/       # API 서비스 (axios 기반)
+│   │   └── types/          # TypeScript 타입 정의
+│   ├── package.json        # 의존성 및 스크립트
+│   └── Dockerfile.dev      # 개발용 Docker 설정
+├── docs/                   # 프로젝트 문서
+│   ├── PRD.md              # 제품 요구사항 문서
+│   ├── design.md           # 시스템 설계 문서
+│   └── tasks.md            # 개발 작업 목록
+├── .husky/                 # Git hooks 설정
+├── .env.example            # 환경 변수 템플릿
+├── .gitignore              # Git 무시 파일 설정
+├── docker-compose.yml      # Docker 개발 환경 설정
+├── CLAUDE.md               # AI 개발 가이드라인
+└── README.md               # 프로젝트 개요
 ```
 
 ## 🎨 구현된 기능 (MVP)
