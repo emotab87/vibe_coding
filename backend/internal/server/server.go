@@ -24,9 +24,11 @@ type Server struct {
 	db          *database.DB
 	userRepo    repositories.UserRepository
 	articleRepo repositories.ArticleRepository
+	commentRepo repositories.CommentRepository
 	jwtService  services.JWTService
 	authHandlers *handlers.AuthHandlers
 	articleHandlers *handlers.ArticleHandlers
+	commentHandlers *handlers.CommentHandlers
 }
 
 // NewServer creates a new server instance with all routes and middleware configured
@@ -45,6 +47,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(db)
 	articleRepo := repositories.NewArticleRepository(db, userRepo)
+	commentRepo := repositories.NewCommentRepository(db, userRepo)
 
 	// Initialize services
 	jwtService := services.NewJWTService(cfg.JWTSecret, 24) // 24 hours token expiry
@@ -52,6 +55,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	// Initialize handlers
 	authHandlers := handlers.NewAuthHandlers(userRepo, jwtService)
 	articleHandlers := handlers.NewArticleHandlers(articleRepo)
+	commentHandlers := handlers.NewCommentHandlers(commentRepo, articleRepo)
 
 	s := &Server{
 		config:       cfg,
@@ -59,9 +63,11 @@ func NewServer(cfg *config.Config) (*Server, error) {
 		db:           db,
 		userRepo:     userRepo,
 		articleRepo:  articleRepo,
+		commentRepo:  commentRepo,
 		jwtService:   jwtService,
 		authHandlers: authHandlers,
 		articleHandlers: articleHandlers,
+		commentHandlers: commentHandlers,
 	}
 
 	s.setupRoutes()
@@ -112,9 +118,9 @@ func (s *Server) setupRoutes() {
 	protected.HandleFunc("/articles/{slug}", s.articleHandlers.DeleteArticle).Methods("DELETE")
 
 	// Comments routes
-	api.HandleFunc("/articles/{slug}/comments", handlers.ListCommentsHandler).Methods("GET")
-	protected.HandleFunc("/articles/{slug}/comments", handlers.CreateCommentHandler).Methods("POST")
-	protected.HandleFunc("/articles/{slug}/comments/{id}", handlers.DeleteCommentHandler).Methods("DELETE")
+	api.HandleFunc("/articles/{slug}/comments", s.commentHandlers.GetCommentsByArticle).Methods("GET")
+	protected.HandleFunc("/articles/{slug}/comments", s.commentHandlers.CreateComment).Methods("POST")
+	protected.HandleFunc("/articles/{slug}/comments/{id}", s.commentHandlers.DeleteComment).Methods("DELETE")
 
 	// Profile routes
 	api.HandleFunc("/profiles/{username}", handlers.GetProfileHandler).Methods("GET")
