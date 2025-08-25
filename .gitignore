@@ -77,6 +77,7 @@ go/pkg/mod/
 
 # Go build cache
 go-build/
+go-installation/
 
 # Database files
 *.db
