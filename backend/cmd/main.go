@@ -18,7 +18,11 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Create and configure the server
-	srv := server.NewServer(cfg)
+	srv, err := server.NewServer(cfg)
+	if err != nil {
+		log.Fatalf("❌ Failed to create server: %v", err)
+	}
+	defer srv.Close()
 
 	// Create HTTP server with configured settings
 	httpServer := &http.Server{

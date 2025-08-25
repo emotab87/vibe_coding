@@ -9,33 +9,72 @@ import (
 	"github.com/rs/cors"
 
 	"github.com/emotab87/vibe_coding/backend/internal/config"
+	"github.com/emotab87/vibe_coding/backend/internal/database"
 	"github.com/emotab87/vibe_coding/backend/internal/handlers"
 	"github.com/emotab87/vibe_coding/backend/internal/middleware"
+	"github.com/emotab87/vibe_coding/backend/internal/repositories"
+	"github.com/emotab87/vibe_coding/backend/internal/services"
 )
 
 // Server represents our application server
 type Server struct {
-	config  *config.Config
-	router  *mux.Router
-	handler http.Handler
+	config      *config.Config
+	router      *mux.Router
+	handler     http.Handler
+	db          *database.DB
+	userRepo    repositories.UserRepository
+	jwtService  services.JWTService
+	authHandlers *handlers.AuthHandlers
 }
 
 // NewServer creates a new server instance with all routes and middleware configured
-func NewServer(cfg *config.Config) *Server {
+func NewServer(cfg *config.Config) (*Server, error) {
+	// Initialize database
+	db, err := database.NewDB(cfg.DatabasePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Run migrations
+	if err := db.Migrate("./migrations"); err != nil {
+		return nil, err
+	}
+
+	// Initialize repositories
+	userRepo := repositories.NewUserRepository(db)
+
+	// Initialize services
+	jwtService := services.NewJWTService(cfg.JWTSecret, 24) // 24 hours token expiry
+
+	// Initialize handlers
+	authHandlers := handlers.NewAuthHandlers(userRepo, jwtService)
+
 	s := &Server{
-		config: cfg,
-		router: mux.NewRouter(),
+		config:       cfg,
+		router:       mux.NewRouter(),
+		db:           db,
+		userRepo:     userRepo,
+		jwtService:   jwtService,
+		authHandlers: authHandlers,
 	}
 
 	s.setupRoutes()
 	s.setupMiddleware()
 
-	return s
+	return s, nil
 }
 
 // Handler returns the configured HTTP handler
 func (s *Server) Handler() http.Handler {
 	return s.handler
+}
+
+// Close closes the server and its dependencies
+func (s *Server) Close() error {
+	if s.db != nil {
+		return s.db.Close()
+	}
+	return nil
 }
 
 // setupRoutes configures all application routes
@@ -47,15 +86,15 @@ func (s *Server) setupRoutes() {
 	api := s.router.PathPrefix("/api").Subrouter()
 
 	// Authentication routes
-	api.HandleFunc("/users", handlers.RegisterUserHandler).Methods("POST")
-	api.HandleFunc("/users/login", handlers.LoginUserHandler).Methods("POST")
+	api.HandleFunc("/users", s.authHandlers.RegisterUser).Methods("POST")
+	api.HandleFunc("/users/login", s.authHandlers.LoginUser).Methods("POST")
 
 	// Protected routes (require authentication)
 	protected := api.PathPrefix("").Subrouter()
 	protected.Use(middleware.AuthMiddleware(s.config.JWTSecret))
 
-	protected.HandleFunc("/user", handlers.GetCurrentUserHandler).Methods("GET")
-	protected.HandleFunc("/user", handlers.UpdateUserHandler).Methods("PUT")
+	protected.HandleFunc("/user", s.authHandlers.GetCurrentUser).Methods("GET")
+	protected.HandleFunc("/user", s.authHandlers.UpdateUser).Methods("PUT")
 
 	// Articles routes
 	api.HandleFunc("/articles", handlers.ListArticlesHandler).Methods("GET")
