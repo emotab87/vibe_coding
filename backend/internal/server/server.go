@@ -23,8 +23,10 @@ type Server struct {
 	handler     http.Handler
 	db          *database.DB
 	userRepo    repositories.UserRepository
+	articleRepo repositories.ArticleRepository
 	jwtService  services.JWTService
 	authHandlers *handlers.AuthHandlers
+	articleHandlers *handlers.ArticleHandlers
 }
 
 // NewServer creates a new server instance with all routes and middleware configured
@@ -42,20 +44,24 @@ func NewServer(cfg *config.Config) (*Server, error) {
 
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(db)
+	articleRepo := repositories.NewArticleRepository(db, userRepo)
 
 	// Initialize services
 	jwtService := services.NewJWTService(cfg.JWTSecret, 24) // 24 hours token expiry
 
 	// Initialize handlers
 	authHandlers := handlers.NewAuthHandlers(userRepo, jwtService)
+	articleHandlers := handlers.NewArticleHandlers(articleRepo)
 
 	s := &Server{
 		config:       cfg,
 		router:       mux.NewRouter(),
 		db:           db,
 		userRepo:     userRepo,
+		articleRepo:  articleRepo,
 		jwtService:   jwtService,
 		authHandlers: authHandlers,
+		articleHandlers: articleHandlers,
 	}
 
 	s.setupRoutes()
@@ -97,13 +103,13 @@ func (s *Server) setupRoutes() {
 	protected.HandleFunc("/user", s.authHandlers.UpdateUser).Methods("PUT")
 
 	// Articles routes
-	api.HandleFunc("/articles", handlers.ListArticlesHandler).Methods("GET")
-	api.HandleFunc("/articles/{slug}", handlers.GetArticleHandler).Methods("GET")
+	api.HandleFunc("/articles", s.articleHandlers.ListArticles).Methods("GET")
+	api.HandleFunc("/articles/{slug}", s.articleHandlers.GetArticle).Methods("GET")
 
 	// Protected article routes
-	protected.HandleFunc("/articles", handlers.CreateArticleHandler).Methods("POST")
-	protected.HandleFunc("/articles/{slug}", handlers.UpdateArticleHandler).Methods("PUT")
-	protected.HandleFunc("/articles/{slug}", handlers.DeleteArticleHandler).Methods("DELETE")
+	protected.HandleFunc("/articles", s.articleHandlers.CreateArticle).Methods("POST")
+	protected.HandleFunc("/articles/{slug}", s.articleHandlers.UpdateArticle).Methods("PUT")
+	protected.HandleFunc("/articles/{slug}", s.articleHandlers.DeleteArticle).Methods("DELETE")
 
 	// Comments routes
 	api.HandleFunc("/articles/{slug}/comments", handlers.ListCommentsHandler).Methods("GET")
